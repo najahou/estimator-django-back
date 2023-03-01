@@ -1,0 +1,47 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==4.1.2"
+djangorestframework = "==3.14.0"
+psycopg2-binary = "==2.9.4"
+dj-rest-auth = "==2.2.5"
+markdown = "==3.4.1"
+django-filter = "==22.1"
+django-environ = "==0.9.0"
+django-cors-headers = "==3.13.0"
+djangorestframework-simplejwt = "==5.2.1"
+sentry-sdk = "==1.10.1"
+drf-writable-nested = "==0.7.0"
+uuid = "==1.30"
+python-magic = "==0.4.27"
+django-excel = "==0.0.10"
+pyexcel-xlsx = "==0.6.0"
+django-anymail = "==8.6"
+python-dateutil = "==2.8.2"
+django-soft-delete = "*"
+django-xhtml2pdf = "*"
+
+[dev-packages]
+flake8 = "==5.0.4"
+black = "==22.10.0"
+pylint = "==2.15.5"
+pylint-django = "2.5.3"
+mypy = "0.982"
+factory-boy = "==2.7.0"
+pytest = "==7.1.3"
+coverage = "==6.5.0"
+pytest-cov = "==4.0.0"
+pytest-django = "==4.5.2"
+django-debug-toolbar = "==3.7.0"
+pytest-pudb = "==0.7.0"
+snapshottest = "==0.6.0"
+isort = "==5.10.1"
+pre-commit = "*"
+django-stubs = "*"
+djangorestframework-stubs = "*"
+
+[requires]
+python_version = "3.10"

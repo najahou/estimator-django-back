@@ -1,0 +1,80 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres:11.6
+    hostname: db.localdomain
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    networks:
+      auxilife:
+        aliases:
+          - db.localdomain
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  app:
+    image: pomelo.azurecr.io/auxilife-backend-dev:latest
+    restart: "unless-stopped"
+    command: python /code/manage.py runserver 0.0.0.0:80
+    networks:
+      auxilife:
+    volumes:
+      - ./:/code:delegated
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  adminer:
+    restart: "unless-stopped"
+    image: adminer
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    networks:
+      auxilife:
+
+  # Reverse proxy
+  nginx:
+    image: nginx:1.23.1-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - DOMAIN_FRONTEND=dev.auxilife.hello-pomelo.ovh
+      - DOMAIN_BACKEND=dev.api.auxilife.hello-pomelo.ovh
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+      # Certbot
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    networks:
+      auxilife:
+    # Reload every 6h (for certificate) and launch nginx
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      auxilife:
+
+networks:
+  auxilife:
+    name: auxilife_network
+    ipam:
+      config:
+        - subnet: 172.16.23.0/24
+
+volumes:
+  pg_data: {}
